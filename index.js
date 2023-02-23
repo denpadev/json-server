@@ -38,4 +38,15 @@ app.get('/', async (req, res) => {
 	isOpen.setState(true)
 })
 
+app.post('/', async (req, res) => {
+	if (req.headers['Content-Type'] === 'application/json') return res.status(401).json({
+		error: 'Invalid Type',
+		message: 'Content-Type must be application/json'
+	})
+	await isOpen.waitForTrue()
+	isOpen.setState(false)
+	req.pipe(fs.createWriteStream(dbPath))
+	isOpen.setState(true)
+})
+
 app.listen(process.env.PORT || 3000)
